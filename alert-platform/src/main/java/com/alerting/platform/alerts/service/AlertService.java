@@ -15,10 +15,13 @@ import com.alerting.platform.team.model.TeamMember;
 import com.alerting.platform.team.service.TeamService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 
@@ -359,19 +362,251 @@ public class AlertService {
         );
     }
 
-    // ========== Query Methods ==========
+    // ================================================================
+    // ========== QUERY METHODS (INCLUDING MISSING ONES) ==============
+    // ================================================================
+
+    /**
+     * Get active alerts for a specific application
+     */
     public List<Alert> getActiveAlerts(String appId) {
         return alertRepository.findByAppIdAndStatusIn(appId, 
-            List.of(AlertStatus.TRIGGERED, AlertStatus.NOTIFIED, 
-                    AlertStatus.ASSIGNED, AlertStatus.ACKNOWLEDGED, 
-                    AlertStatus.IN_PROGRESS));
+            List.of(
+                AlertStatus.TRIGGERED, 
+                AlertStatus.NOTIFIED, 
+                AlertStatus.ASSIGNED, 
+                AlertStatus.ACKNOWLEDGED, 
+                AlertStatus.IN_PROGRESS,
+                AlertStatus.ESCALATED,
+                AlertStatus.PENDING_VERIFICATION
+            ));
     }
 
+    /**
+     * Get alerts assigned to a specific team member
+     */
     public List<Alert> getAlertsByAssignee(Long memberId) {
-        return alertRepository.findByAssigneeIdAndStatusNot(memberId, AlertStatus.RESOLVED);
+        return alertRepository.findActiveAlertsByAssignee(memberId);
     }
 
+    /**
+     * Get all unassigned alerts
+     */
     public List<Alert> getUnassignedAlerts() {
         return alertRepository.findByStatus(AlertStatus.UNASSIGNED);
+    }
+
+    /**
+     * Get recent alerts within specified hours
+     * THIS WAS THE MISSING METHOD!
+     */
+    public List<Alert> getRecentAlerts(int hours) {
+        Instant since = Instant.now().minus(hours, ChronoUnit.HOURS);
+        return alertRepository.findByTriggeredAtAfterOrderByTriggeredAtDesc(since);
+    }
+
+    /**
+     * Get recent alerts with specific statuses
+     */
+    public List<Alert> getRecentAlerts(int hours, List<AlertStatus> statuses) {
+        Instant since = Instant.now().minus(hours, ChronoUnit.HOURS);
+        return alertRepository.findByTriggeredAtAfterAndStatusInOrderByTriggeredAtDesc(since, statuses);
+    }
+
+    /**
+     * Get alerts by status
+     */
+    public List<Alert> getAlertsByStatus(AlertStatus status) {
+        return alertRepository.findByStatus(status);
+    }
+
+    /**
+     * Get alerts by multiple statuses
+     */
+    public List<Alert> getAlertsByStatuses(List<AlertStatus> statuses) {
+        return alertRepository.findByStatusInOrderByTriggeredAtDesc(statuses);
+    }
+
+    /**
+     * Get escalated alerts
+     */
+    public List<Alert> getEscalatedAlerts() {
+        return alertRepository.findByStatus(AlertStatus.ESCALATED);
+    }
+
+    /**
+     * Get alerts for a specific team
+     */
+    public List<Alert> getAlertsByTeam(Long teamId) {
+        return alertRepository.findActiveAlertsByTeam(teamId);
+    }
+
+    /**
+     * Get alert by ID (public method)
+     */
+    public Alert getAlert(Long alertId) {
+        return getAlertById(alertId);
+    }
+
+    /**
+     * Get alerts with pagination
+     */
+    public Page<Alert> getAlertsPaginated(String appId, Pageable pageable) {
+        return alertRepository.findByAppIdOrderByTriggeredAtDesc(appId, pageable);
+    }
+
+    /**
+     * Get alerts by date range
+     */
+    public List<Alert> getAlertsByDateRange(Instant start, Instant end) {
+        return alertRepository.findByTriggeredAtBetween(start, end);
+    }
+
+    /**
+     * Get user-level alerts for a specific user
+     */
+    public List<Alert> getUserAlerts(String userId) {
+        return alertRepository.findActiveUserAlerts(userId);
+    }
+
+    /**
+     * Count active alerts for an application
+     */
+    public long countActiveAlerts(String appId) {
+        return alertRepository.countByAppIdAndStatusIn(appId, 
+            List.of(
+                AlertStatus.TRIGGERED, 
+                AlertStatus.NOTIFIED, 
+                AlertStatus.ASSIGNED, 
+                AlertStatus.ACKNOWLEDGED, 
+                AlertStatus.IN_PROGRESS,
+                AlertStatus.ESCALATED
+            ));
+    }
+
+    /**
+     * Get all active alerts (across all apps)
+     */
+    public List<Alert> getAllActiveAlerts() {
+        return alertRepository.findByStatusInOrderByTriggeredAtDesc(
+            List.of(
+                AlertStatus.TRIGGERED, 
+                AlertStatus.NOTIFIED, 
+                AlertStatus.ASSIGNED, 
+                AlertStatus.ACKNOWLEDGED, 
+                AlertStatus.IN_PROGRESS,
+                AlertStatus.ESCALATED,
+                AlertStatus.PENDING_VERIFICATION
+            ));
+    }
+
+    /**
+     * Get alerts needing attention (unacknowledged for too long)
+     */
+    public List<Alert> getAlertsNeedingAttention(int minutesOld) {
+        Instant threshold = Instant.now().minus(minutesOld, ChronoUnit.MINUTES);
+        return alertRepository.findAlertsNeedingEscalation(threshold, 2);
+    }
+
+    /**
+     * Search alerts by rule name
+     */
+    public List<Alert> searchByRuleName(String ruleName) {
+        return alertRepository.findByRuleNameContainingIgnoreCase(ruleName);
+    }
+
+    /**
+     * Get timeline for an alert
+     */
+    public List<AlertTimeline> getAlertTimeline(Long alertId) {
+        return timelineRepository.findByAlertIdOrderByCreatedAtDesc(alertId);
+    }
+
+    /**
+     * Get comments for an alert
+     */
+    public List<AlertComment> getAlertComments(Long alertId) {
+        return commentRepository.findByAlertIdOrderByCreatedAtDesc(alertId);
+    }
+
+    /**
+     * Get comments for an alert (excluding internal ones)
+     */
+    public List<AlertComment> getPublicAlertComments(Long alertId) {
+        Alert alert = getAlertById(alertId);
+        return commentRepository.findByAlertAndIsInternalFalseOrderByCreatedAtDesc(alert);
+    }
+
+    /**
+     * Reopen a resolved alert
+     */
+    @Transactional
+    public Alert reopenAlert(Long alertId, String reopenedBy, String reason) {
+        Alert alert = getAlertById(alertId);
+        
+        if (alert.getStatus() != AlertStatus.RESOLVED && 
+            alert.getStatus() != AlertStatus.AUTO_RESOLVED &&
+            alert.getStatus() != AlertStatus.CLOSED) {
+            throw new IllegalStateException("Only resolved/closed alerts can be reopened");
+        }
+
+        AlertStatus previousStatus = alert.getStatus();
+        alert.setStatus(AlertStatus.TRIGGERED);
+        alert.setResolvedAt(null);
+        alert.setResolvedBy(null);
+        alert.setResolutionType(null);
+        alert.setResolutionNotes(null);
+        alert.setAutoResolved(false);
+
+        addTimelineEntry(alert, TimelineEventType.REOPENED,
+            "Reopened from " + previousStatus + ": " + reason, reopenedBy);
+
+        // Re-mark for deduplication
+        deduplicationService.markAlertCreated(alert.getDeduplicationKey(), alert.getId());
+
+        return alertRepository.save(alert);
+    }
+
+    /**
+     * Suppress/snooze an alert
+     */
+    @Transactional
+    public Alert suppressAlert(Long alertId, String suppressedBy, int suppressMinutes) {
+        Alert alert = getAlertById(alertId);
+        
+        alert.setStatus(AlertStatus.SUPPRESSED);
+        alert.setSuppressedUntil(Instant.now().plus(suppressMinutes, ChronoUnit.MINUTES));
+
+        addTimelineEntry(alert, TimelineEventType.STATUS_CHANGED,
+            "Suppressed for " + suppressMinutes + " minutes", suppressedBy);
+
+        return alertRepository.save(alert);
+    }
+
+    /**
+     * Merge duplicate alert (mark as duplicate of another)
+     */
+    @Transactional
+    public Alert markAsDuplicate(Long alertId, Long originalAlertId, String markedBy) {
+        Alert alert = getAlertById(alertId);
+        Alert originalAlert = getAlertById(originalAlertId);
+
+        alert.setStatus(AlertStatus.RESOLVED);
+        alert.setResolvedAt(Instant.now());
+        alert.setResolvedBy(markedBy);
+        alert.setResolutionType(ResolutionType.DUPLICATE);
+        alert.setResolutionNotes("Duplicate of alert #" + originalAlertId);
+
+        addTimelineEntry(alert, TimelineEventType.RESOLVED,
+            "Marked as duplicate of alert #" + originalAlertId, markedBy);
+
+        // Add comment to original alert
+        addComment(originalAlertId, 
+            "Alert #" + alertId + " was marked as a duplicate of this alert", 
+            "SYSTEM", "System", true);
+
+        deduplicationService.clearDeduplication(alert.getDeduplicationKey());
+
+        return alertRepository.save(alert);
     }
 }

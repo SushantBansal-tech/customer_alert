@@ -24,8 +24,31 @@ public interface AlertRepository extends JpaRepository<Alert, Long> {
 
     List<Alert> findByStatus(AlertStatus status);
 
+    List<Alert> findByStatusInOrderByTriggeredAtDesc(List<AlertStatus> statuses);
+
     @Query("SELECT a FROM Alert a WHERE a.status IN :statuses ORDER BY a.triggeredAt DESC")
     List<Alert> findActiveAlertsForAutoCheck(@Param("statuses") List<AlertStatus> statuses);
+
+    // ========== Time-based Queries (THESE WERE MISSING) ==========
+
+    /**
+     * Find alerts triggered after a specific time
+     */
+    List<Alert> findByTriggeredAtAfterOrderByTriggeredAtDesc(Instant since);
+
+    /**
+     * Find alerts triggered after a time with specific statuses
+     */
+    List<Alert> findByTriggeredAtAfterAndStatusInOrderByTriggeredAtDesc(
+        Instant since, 
+        List<AlertStatus> statuses
+    );
+
+    /**
+     * Find alerts in a date range
+     */
+    @Query("SELECT a FROM Alert a WHERE a.triggeredAt BETWEEN :start AND :end ORDER BY a.triggeredAt DESC")
+    List<Alert> findByTriggeredAtBetween(@Param("start") Instant start, @Param("end") Instant end);
 
     // ========== Deduplication ==========
 
@@ -58,12 +81,9 @@ public interface AlertRepository extends JpaRepository<Alert, Long> {
 
     List<Alert> findByStatusAndAssigneeIsNull(AlertStatus status);
 
-    // ========== Time-based Queries ==========
+    // ========== Search ==========
 
-    List<Alert> findByTriggeredAtAfterAndStatusIn(Instant since, List<AlertStatus> statuses);
-
-    @Query("SELECT a FROM Alert a WHERE a.triggeredAt BETWEEN :start AND :end ORDER BY a.triggeredAt DESC")
-    List<Alert> findByTriggeredAtBetween(@Param("start") Instant start, @Param("end") Instant end);
+    List<Alert> findByRuleNameContainingIgnoreCase(String ruleName);
 
     // ========== Statistics Queries ==========
 
@@ -82,7 +102,7 @@ public interface AlertRepository extends JpaRepository<Alert, Long> {
     // ========== Escalation Queries ==========
 
     @Query("SELECT a FROM Alert a WHERE a.acknowledgedAt IS NULL AND a.triggeredAt < :threshold " +
-           "AND a.escalationLevel < :maxLevel AND a.status NOT IN ('RESOLVED', 'AUTO_RESOLVED', 'CLOSED')")
+           "AND a.escalationLevel < :maxLevel AND a.status NOT IN ('RESOLVED', 'AUTO_RESOLVED', 'CLOSED', 'SUPPRESSED')")
     List<Alert> findAlertsNeedingEscalation(
         @Param("threshold") Instant threshold,
         @Param("maxLevel") int maxLevel
@@ -102,11 +122,16 @@ public interface AlertRepository extends JpaRepository<Alert, Long> {
 
     // ========== Resolution Metrics ==========
 
-    @Query("SELECT AVG(TIMESTAMPDIFF(SECOND, a.triggeredAt, a.acknowledgedAt)) FROM Alert a " +
+    @Query("SELECT AVG(EXTRACT(EPOCH FROM (a.acknowledgedAt - a.triggeredAt))) FROM Alert a " +
            "WHERE a.acknowledgedAt IS NOT NULL AND a.triggeredAt > :since")
     Double avgTimeToAcknowledge(@Param("since") Instant since);
 
-    @Query("SELECT AVG(TIMESTAMPDIFF(SECOND, a.triggeredAt, a.resolvedAt)) FROM Alert a " +
+    @Query("SELECT AVG(EXTRACT(EPOCH FROM (a.resolvedAt - a.triggeredAt))) FROM Alert a " +
            "WHERE a.resolvedAt IS NOT NULL AND a.triggeredAt > :since")
     Double avgTimeToResolve(@Param("since") Instant since);
+
+    // ========== Suppressed Alerts ==========
+
+    @Query("SELECT a FROM Alert a WHERE a.status = 'SUPPRESSED' AND a.suppressedUntil < :now")
+    List<Alert> findExpiredSuppressedAlerts(@Param("now") Instant now);
 }
