@@ -15,7 +15,8 @@
     {
       "name": "alert.sdk.api-url",
       "type": "java.lang.String",
-      "sourceType": "com.alerting.sdk.AlertSDKProperties"
+      "sourceType": "com.alerting.sdk.AlertSDKProperties",
+      "defaultValue": "http:\/\/localhost:8080\/api\/v1\/events"
     },
     {
       "name": "alert.sdk.app-id",
@@ -25,42 +26,50 @@
     {
       "name": "alert.sdk.async",
       "type": "java.lang.Boolean",
-      "sourceType": "com.alerting.sdk.AlertSDKProperties"
+      "sourceType": "com.alerting.sdk.AlertSDKProperties",
+      "defaultValue": true
     },
     {
       "name": "alert.sdk.buffer-size",
       "type": "java.lang.Integer",
-      "sourceType": "com.alerting.sdk.AlertSDKProperties"
+      "sourceType": "com.alerting.sdk.AlertSDKProperties",
+      "defaultValue": 1000
     },
     {
       "name": "alert.sdk.connection-timeout",
       "type": "java.lang.Integer",
-      "sourceType": "com.alerting.sdk.AlertSDKProperties"
+      "sourceType": "com.alerting.sdk.AlertSDKProperties",
+      "defaultValue": 5000
     },
     {
       "name": "alert.sdk.enabled",
       "type": "java.lang.Boolean",
-      "sourceType": "com.alerting.sdk.AlertSDKProperties"
+      "sourceType": "com.alerting.sdk.AlertSDKProperties",
+      "defaultValue": true
     },
     {
       "name": "alert.sdk.flush-interval-ms",
       "type": "java.lang.Integer",
-      "sourceType": "com.alerting.sdk.AlertSDKProperties"
+      "sourceType": "com.alerting.sdk.AlertSDKProperties",
+      "defaultValue": 5000
     },
     {
       "name": "alert.sdk.max-retries",
       "type": "java.lang.Integer",
-      "sourceType": "com.alerting.sdk.AlertSDKProperties"
+      "sourceType": "com.alerting.sdk.AlertSDKProperties",
+      "defaultValue": 3
     },
     {
       "name": "alert.sdk.read-timeout",
       "type": "java.lang.Integer",
-      "sourceType": "com.alerting.sdk.AlertSDKProperties"
+      "sourceType": "com.alerting.sdk.AlertSDKProperties",
+      "defaultValue": 5000
     },
     {
       "name": "alert.sdk.retry-delay-ms",
       "type": "java.lang.Integer",
-      "sourceType": "com.alerting.sdk.AlertSDKProperties"
+      "sourceType": "com.alerting.sdk.AlertSDKProperties",
+      "defaultValue": 1000
     }
   ],
   "hints": []
