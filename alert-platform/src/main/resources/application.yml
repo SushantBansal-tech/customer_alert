@@ -1,0 +1,76 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: alert-platform
+    
+  datasource:
+    url: jdbc:postgresql://localhost:5432/alerting
+    username: alerting
+    password: alerting
+    driver-class-name: org.postgresql.Driver
+    
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2000ms
+      
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: alert-platform
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+# Platform Configuration
+alerting:
+  kafka:
+    events-topic: alert-events
+    alerts-topic: alerts
+    dlq-topic: alert-events-dlq
+  
+  aggregation:
+    window-size-seconds: 60
+    bucket-size-seconds: 10
+    
+  rules:
+    evaluation-interval-seconds: 10
+    
+  notifications:
+    slack:
+      enabled: true
+      webhook-url: ${SLACK_WEBHOOK_URL}
+      channel: "#alerts"
+    email:
+      enabled: true
+      from: alerts@company.com
+      recipients: oncall@company.com
+      
+  deduplication:
+    window-minutes: 5
+

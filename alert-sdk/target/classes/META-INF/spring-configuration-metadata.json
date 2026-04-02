@@ -1,0 +1,67 @@
+{
+  "groups": [
+    {
+      "name": "alert.sdk",
+      "type": "com.alerting.sdk.AlertSDKProperties",
+      "sourceType": "com.alerting.sdk.AlertSDKProperties"
+    }
+  ],
+  "properties": [
+    {
+      "name": "alert.sdk.api-key",
+      "type": "java.lang.String",
+      "sourceType": "com.alerting.sdk.AlertSDKProperties"
+    },
+    {
+      "name": "alert.sdk.api-url",
+      "type": "java.lang.String",
+      "sourceType": "com.alerting.sdk.AlertSDKProperties"
+    },
+    {
+      "name": "alert.sdk.app-id",
+      "type": "java.lang.String",
+      "sourceType": "com.alerting.sdk.AlertSDKProperties"
+    },
+    {
+      "name": "alert.sdk.async",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.alerting.sdk.AlertSDKProperties"
+    },
+    {
+      "name": "alert.sdk.buffer-size",
+      "type": "java.lang.Integer",
+      "sourceType": "com.alerting.sdk.AlertSDKProperties"
+    },
+    {
+      "name": "alert.sdk.connection-timeout",
+      "type": "java.lang.Integer",
+      "sourceType": "com.alerting.sdk.AlertSDKProperties"
+    },
+    {
+      "name": "alert.sdk.enabled",
+      "type": "java.lang.Boolean",
+      "sourceType": "com.alerting.sdk.AlertSDKProperties"
+    },
+    {
+      "name": "alert.sdk.flush-interval-ms",
+      "type": "java.lang.Integer",
+      "sourceType": "com.alerting.sdk.AlertSDKProperties"
+    },
+    {
+      "name": "alert.sdk.max-retries",
+      "type": "java.lang.Integer",
+      "sourceType": "com.alerting.sdk.AlertSDKProperties"
+    },
+    {
+      "name": "alert.sdk.read-timeout",
+      "type": "java.lang.Integer",
+      "sourceType": "com.alerting.sdk.AlertSDKProperties"
+    },
+    {
+      "name": "alert.sdk.retry-delay-ms",
+      "type": "java.lang.Integer",
+      "sourceType": "com.alerting.sdk.AlertSDKProperties"
+    }
+  ],
+  "hints": []
+}
