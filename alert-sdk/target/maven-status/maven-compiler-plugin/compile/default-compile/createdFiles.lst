@@ -1,9 +1,0 @@
-com\alerting\sdk\model\AlertEvent.class
-com\alerting\sdk\client\AlertHttpClient.class
-com\alerting\sdk\model\AlertEvent$EventOutcome.class
-com\alerting\sdk\AlertSDKProperties.class
-com\alerting\sdk\AlertSDK$ThrowingSupplier.class
-com\alerting\sdk\model\AlertEvent$AlertEventBuilder.class
-META-INF\spring-configuration-metadata.json
-com\alerting\sdk\AlertSDK.class
-com\alerting\sdk\AlertSDKAutoConfiguration.class
