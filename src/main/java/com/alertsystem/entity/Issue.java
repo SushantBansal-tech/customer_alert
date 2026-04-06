@@ -1,5 +1,7 @@
 package com.alertsystem.entity;
 
+import com.alertsystem.entity.IssueStatus;
+import com.alertsystem.entity.Severity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -62,6 +64,3 @@ public class Issue {
     }
 }
 
-enum IssueStatus {
-    OPEN, ASSIGNED, IN_PROGRESS, RESOLVED
-}

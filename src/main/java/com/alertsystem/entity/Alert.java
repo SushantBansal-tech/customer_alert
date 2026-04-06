@@ -1,5 +1,6 @@
 package com.alertsystem.entity;
 
+import com.alertsystem.entity.AlertStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
@@ -55,6 +56,3 @@ public class Alert {
     }
 }
 
-enum AlertStatus {
-    PENDING, SENT, ACKNOWLEDGED
-}

@@ -1,5 +1,6 @@
 package com.alertsystem.entity;
 
+import com.alertsystem.entity.Severity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -56,6 +57,6 @@ public class UserActivity {
     }
 }
 
-enum Severity {
-    LOW, MEDIUM, HIGH, CRITICAL
-}
+// enum Severity {
+//     LOW, MEDIUM, HIGH, CRITICAL
+// }

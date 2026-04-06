@@ -31,21 +31,24 @@ public class PaymentController {
             
             return ResponseEntity.ok(response);
             
-        } catch (PaymentGatewayException e) {
-            long duration = System.currentTimeMillis() - startTime;
-            logger.error("[REQUEST_END] [USER_ID:{}] [REQUEST_ID:{}] [STATUS:FAILED] [DURATION:{}ms] [ERROR_TYPE:PAYMENT_GATEWAY] [MESSAGE:{}]",
-                        userId, requestId, duration, e.getMessage(), e);
+        } 
+        // catch (PaymentGatewayException e) {
+        //     long duration = System.currentTimeMillis() - startTime;
+        //     logger.error("[REQUEST_END] [USER_ID:{}] [REQUEST_ID:{}] [STATUS:FAILED] [DURATION:{}ms] [ERROR_TYPE:PAYMENT_GATEWAY] [MESSAGE:{}]",
+        //                 userId, requestId, duration, e.getMessage(), e);
             
-            return ResponseEntity.status(500).body("Payment gateway error");
+        //     return ResponseEntity.status(500).body("Payment gateway error");
             
-        } catch (DatabaseException e) {
-            long duration = System.currentTimeMillis() - startTime;
-            logger.error("[REQUEST_END] [USER_ID:{}] [REQUEST_ID:{}] [STATUS:FAILED] [DURATION:{}ms] [ERROR_TYPE:DB_ERROR] [MESSAGE:{}]",
-                        userId, requestId, duration, e.getMessage(), e);
+        // } 
+        // catch (DatabaseException e) {
+        //     long duration = System.currentTimeMillis() - startTime;
+        //     logger.error("[REQUEST_END] [USER_ID:{}] [REQUEST_ID:{}] [STATUS:FAILED] [DURATION:{}ms] [ERROR_TYPE:DB_ERROR] [MESSAGE:{}]",
+        //                 userId, requestId, duration, e.getMessage(), e);
             
-            return ResponseEntity.status(500).body("Database error");
+        //     return ResponseEntity.status(500).body("Database error");
             
-        } catch (Exception e) {
+        // } 
+        catch (Exception e) {
             long duration = System.currentTimeMillis() - startTime;
             logger.error("[REQUEST_END] [USER_ID:{}] [REQUEST_ID:{}] [STATUS:FAILED] [DURATION:{}ms] [ERROR_TYPE:UNKNOWN] [MESSAGE:{}]",
                         userId, requestId, duration, e.getMessage(), e);

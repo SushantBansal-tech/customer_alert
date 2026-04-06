@@ -1,3 +1,4 @@
+C:\Users\susha\Desktop\customer-alerting-platform\src\main\java\com\alertsystem\entity\IssueStatus.java
 C:\Users\susha\Desktop\customer-alerting-platform\src\main\java\com\alertsystem\controller\IssueController.java
 C:\Users\susha\Desktop\customer-alerting-platform\src\main\java\com\alertsystem\dto\LogEvent.java
 C:\Users\susha\Desktop\customer-alerting-platform\src\main\java\com\alertsystem\example\PaymentController.java
@@ -19,10 +20,13 @@ C:\Users\susha\Desktop\customer-alerting-platform\src\main\java\com\alertsystem\
 C:\Users\susha\Desktop\customer-alerting-platform\src\main\java\com\alertsystem\service\ActivityCaptureService.java
 C:\Users\susha\Desktop\customer-alerting-platform\src\main\java\com\alertsystem\entity\Alert.java
 C:\Users\susha\Desktop\customer-alerting-platform\src\main\java\com\alertsystem\service\IssueService.java
+C:\Users\susha\Desktop\customer-alerting-platform\src\main\java\com\alertsystem\AlertMonitoringSystemApplication.java
+C:\Users\susha\Desktop\customer-alerting-platform\src\main\java\com\alertsystem\entity\AlertStatus.java
 C:\Users\susha\Desktop\customer-alerting-platform\src\main\java\com\alertsystem\repository\AlertRepository.java
 C:\Users\susha\Desktop\customer-alerting-platform\src\main\java\com\alertsystem\service\LogParser.java
 C:\Users\susha\Desktop\customer-alerting-platform\src\main\java\com\alertsystem\service\NotificationService.java
 C:\Users\susha\Desktop\customer-alerting-platform\src\main\java\com\alertsystem\repository\IssueHistoryRepository.java
-C:\Users\susha\Desktop\customer-alerting-platform\src\main\java\com\alertsystem\entity\Notificationlog.java
+C:\Users\susha\Desktop\customer-alerting-platform\src\main\java\com\alertsystem\entity\NotificationLog.java
+C:\Users\susha\Desktop\customer-alerting-platform\src\main\java\com\alertsystem\entity\Severity.java
 C:\Users\susha\Desktop\customer-alerting-platform\src\main\java\com\alertsystem\repository\NotificationLogRepository.java
 C:\Users\susha\Desktop\customer-alerting-platform\src\main\java\com\alertsystem\entity\Issue.java
